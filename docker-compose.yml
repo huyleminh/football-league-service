@@ -1,0 +1,22 @@
+version: '3'
+
+networks:
+  local_network:
+    external: true
+
+services:
+  football-league-service:
+    image: h2/football-league-service
+    container_name: football-league-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    env_file:
+      - .env.production
+    networks:
+      - local_network
+    ports:
+      - 5000:5000
