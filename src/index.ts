@@ -42,6 +42,9 @@ export default class Server {
     }
 
     initializeControllers() {
+        this._app.get("/health-check", (req, res) => {
+            res.json({ code: 200, message: "OK", data: { service: "football-league", version: "v1" } });
+        });
         ControllerList.forEach((controller: AppController) => {
             this._app.use("/", controller.router);
         });
