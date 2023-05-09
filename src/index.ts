@@ -38,7 +38,6 @@ export default class Server {
                 stream: new AppLogStream(),
             }),
         );
-        this._app.use(AuthMiddlewares.verifyUserToken);
     }
 
     initializeControllers() {
@@ -46,7 +45,7 @@ export default class Server {
             res.json({ code: 200, message: "OK", data: { service: "football-league", version: "v1" } });
         });
         ControllerList.forEach((controller: AppController) => {
-            this._app.use("/", controller.router);
+            this._app.use("/", AuthMiddlewares.verifyUserToken, controller.router);
         });
     }
 
