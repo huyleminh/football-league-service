@@ -46,12 +46,6 @@ export function validateRefreshTokenData(req: IAppRequest, res: IAppResponse, ne
 }
 
 export function verifyUserToken(req: IAppRequest, res: IAppResponse, next: IAppNextFuction) {
-    const { path } = req;
-    if (path && (path.match("/auth") || path.match("/public"))) {
-        next();
-        return;
-    }
-
     const { authorization } = req.headers;
     const apiRes = new AppResponse(res, 401);
     if (!authorization) {

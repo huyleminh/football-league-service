@@ -29,6 +29,7 @@ export default class TournamentController extends AppController {
     }
 
     init(): void {
+        this._router.use(AuthMiddlewares.verifyUserToken);
         this._router.get(
             "/tournaments/:id/config",
             [AuthMiddlewares.verifyManagerRole],

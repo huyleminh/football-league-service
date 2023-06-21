@@ -24,6 +24,7 @@ export default class ManagerController extends AppController {
     }
 
     init(): void {
+        this._router.use(AuthMiddlewares.verifyUserToken);
         this._router.get(
             "/managers",
             [AuthMiddlewares.verifyAdminRole, ManagerMiddlewares.verifyGetParams],

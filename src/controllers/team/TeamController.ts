@@ -27,6 +27,7 @@ export default class TeamController extends AppController {
     }
 
     init(): void {
+        this._router.use(AuthMiddlewares.verifyUserToken);
         this._router.get("/teams/:id/players", [AuthMiddlewares.verifyManagerRole], this.getPlayerListByTeamIdAsync);
         this._router.get("/teams/:id", this.getTeamDetailByIdAsync);
         this._router.get("/teams", [TeamMiddlewares.validateGetParams], this.getTeamListAsync);

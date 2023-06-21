@@ -1,10 +1,10 @@
 import * as crypto from "crypto";
 import * as jwt from "jsonwebtoken";
 import { IUserModel } from "../models/interfaces/IUserModel";
-import { AppConfigs } from "../shared/AppConfigs";
+import { APP_CONFIGS } from "../shared/AppConfigs";
 
 export function generateAccessToken(data: any): string {
-    return jwt.sign(data, AppConfigs.SECRET_ACCESS_TOKEN, {
+    return jwt.sign(data, APP_CONFIGS.secretAccessToken, {
         algorithm: "HS256",
         expiresIn: "1 hours",
     });
@@ -13,7 +13,7 @@ export function generateAccessToken(data: any): string {
 export function generateRefreshToken(data: string) {
     const algorithm = "aes-256-cbc";
     const initVector = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv(algorithm, Buffer.from(AppConfigs.SECRET_REFRESH_TOKEN, "hex"), initVector);
+    const cipher = crypto.createCipheriv(algorithm, Buffer.from(APP_CONFIGS.secretRefreshToken, "hex"), initVector);
 
     let token = cipher.update(data);
     token = Buffer.concat([token, cipher.final()]);
@@ -21,11 +21,11 @@ export function generateRefreshToken(data: string) {
 }
 
 export function generateIdToken(userId: string, data: Partial<IUserModel>): string {
-    return jwt.sign({ ...data }, AppConfigs.SECRET_ID_TOKEN, {
+    return jwt.sign({ ...data }, APP_CONFIGS.secretIdToken, {
         algorithm: "HS256",
         expiresIn: "7 days",
         subject: userId,
-        issuer: AppConfigs.APP_URL,
+        issuer: APP_CONFIGS.appUrl,
         // audience: "frontend",
     });
 }
@@ -34,7 +34,7 @@ export function decryptRefreshToken(token: string, iv: string) {
     const algorithm = "aes-256-cbc";
     const decipher = crypto.createDecipheriv(
         algorithm,
-        Buffer.from(AppConfigs.SECRET_REFRESH_TOKEN, "hex"),
+        Buffer.from(APP_CONFIGS.secretRefreshToken, "hex"),
         Buffer.from(iv, "hex"),
     );
 
@@ -45,7 +45,7 @@ export function decryptRefreshToken(token: string, iv: string) {
 
 export async function verifyToken(token: string, type: "access_token" | "id_token"): Promise<jwt.JwtPayload | string> {
     return new Promise(function (resolve, reject) {
-        const key = type === "access_token" ? AppConfigs.SECRET_ACCESS_TOKEN : AppConfigs.SECRET_ID_TOKEN;
+        const key = type === "access_token" ? APP_CONFIGS.secretAccessToken : APP_CONFIGS.secretIdToken;
         jwt.verify(token, key, function (err, payload) {
             if (err) {
                 return reject(err);

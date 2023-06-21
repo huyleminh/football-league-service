@@ -24,6 +24,7 @@ export default class MatchController extends AppController {
     }
 
     init(): void {
+        this._router.use(AuthMiddlewares.verifyUserToken);
         this._router.get("/matches/:id/events", [], this.getMatchEventById);
         this._router.get("/matches/:id", [], this.getMatchDetailById);
         this._router.get("/matches", [MatchMiddlewares.validateGetParams], this.getMatchListAsync);

@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as FormData from "form-data";
 import * as fs from "fs";
-import { AppConfigs } from "../shared/AppConfigs";
+import { APP_CONFIGS } from "../shared/AppConfigs";
 import { Logger } from "../utils/Logger";
 
 export default class ImgBBService {
@@ -13,7 +13,7 @@ export default class ImgBBService {
     static uploadImageNoExpireAsync(imagePath: string): Promise<string> {
         return new Promise(async function (resolve, reject) {
             try {
-                const url = `${AppConfigs.IMGBB_API_URL}?key=${AppConfigs.IMGBB_API_KEY}`;
+                const url = `${APP_CONFIGS.imgbbApiUrl}?key=${APP_CONFIGS.imgbbApiKey}`;
                 const image = ImgBBService.readImageBase64(imagePath);
                 const formData = new FormData();
                 formData.append("image", image);

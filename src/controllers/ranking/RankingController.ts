@@ -1,4 +1,5 @@
 import { IAppRequest, IAppResponse } from "../../@types/AppBase";
+import AuthMiddlewares from "../../middlewares/AuthMiddlewares";
 import TeamModel from "../../models/TeamModel";
 import TournamentParticipantModel from "../../models/TournamentParticipantModel";
 import AppResponse from "../../shared/AppResponse";
@@ -14,6 +15,7 @@ export default class RankingController extends AppController {
     }
 
     init(): void {
+        this._router.use(AuthMiddlewares.verifyUserToken);
         this._router.get("/ranking/:id", this.getTournamentRankingAsync);
     }
 

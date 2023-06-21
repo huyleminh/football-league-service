@@ -20,6 +20,7 @@ export default class PlayerController extends AppController {
     }
 
     init(): void {
+        this._router.use(AuthMiddlewares.verifyUserToken);
         this._router.post(
             "/players",
             [AuthMiddlewares.verifyManagerRole, PlayerMiddlewares.validateCreatePlayerData],

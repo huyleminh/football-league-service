@@ -1,4 +1,5 @@
 import AppController from "./AppController";
+import ApiDocumentController from "./api-doc/ApiDocumentController";
 import AuthController from "./auth/AuthController";
 import ManagerController from "./manager/ManagerController";
 import MatchController from "./match/MatchController";
@@ -8,6 +9,7 @@ import TeamController from "./team/TeamController";
 import TournamentController from "./tournament/TournamentController";
 
 const ControllerList: AppController[] = [
+    new ApiDocumentController(),
     new AuthController(),
     new ManagerController(),
     new TournamentController(),

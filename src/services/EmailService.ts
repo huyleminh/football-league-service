@@ -1,20 +1,20 @@
 import * as nodemailer from "nodemailer";
-import { EmailConfigs } from "../shared/AppConfigs";
+import { EMAIL_CONFIGS } from "../shared/AppConfigs";
 import { newAccountTemplate, resetPasswordTemplate } from "../templates/EmailTemplate";
 
 const transport = nodemailer.createTransport({
-    host: EmailConfigs.MAIL_HOST,
-    port: EmailConfigs.MAIL_PORT,
+    host: EMAIL_CONFIGS.host,
+    port: EMAIL_CONFIGS.port,
     auth: {
-        user: EmailConfigs.MAILTRAP_USER,
-        pass: EmailConfigs.MAILTRAP_PASSWORD,
+        user: EMAIL_CONFIGS.mailtrapUser,
+        pass: EMAIL_CONFIGS.mailtrapPassword,
     },
 });
 
 export default class EmailService {
     static sendUsernamePassword(to: string, username: string, password: string) {
         return transport.sendMail({
-            from: EmailConfigs.MAIL_FROM_USER,
+            from: EMAIL_CONFIGS.userFrom,
             to,
             subject: "Thông báo tài khoản",
             html: newAccountTemplate(username, password),
@@ -23,7 +23,7 @@ export default class EmailService {
 
     static sendResetPassword(to: string, password: string) {
         return transport.sendMail({
-            from: EmailConfigs.MAIL_FROM_USER,
+            from: EMAIL_CONFIGS.userFrom,
             to,
             subject: "Cấp lại mật khẩu",
             html: resetPasswordTemplate(password),

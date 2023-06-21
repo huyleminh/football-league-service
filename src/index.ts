@@ -6,8 +6,7 @@ import * as morgan from "morgan";
 import { IAppNextFuction, IAppRequest, IAppResponse } from "./@types/AppBase";
 import ControllerList from "./controllers";
 import AppController from "./controllers/AppController";
-import AuthMiddlewares from "./middlewares/AuthMiddlewares";
-import { AppConfigs } from "./shared/AppConfigs";
+import { APP_CONFIGS } from "./shared/AppConfigs";
 import { AppLogStream, Logger } from "./utils/Logger";
 
 export default class Server {
@@ -16,7 +15,7 @@ export default class Server {
 
     constructor() {
         this._app = express();
-        this.PORT = AppConfigs.PORT;
+        this.PORT = APP_CONFIGS.port;
     }
 
     initializeGlobalMiddlewares() {
@@ -26,7 +25,7 @@ export default class Server {
         this._app.use(helmet());
         this._app.use(
             cors({
-                origin: AppConfigs.AUTH_CLIENT_URLS,
+                origin: APP_CONFIGS.authClientUrls,
                 credentials: true,
                 methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
                 allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
@@ -45,7 +44,7 @@ export default class Server {
             res.json({ code: 200, message: "OK", data: { service: "football-league", version: "v1" } });
         });
         ControllerList.forEach((controller: AppController) => {
-            this._app.use("/", AuthMiddlewares.verifyUserToken, controller.router);
+            this._app.use("/", controller.router);
         });
     }
 
@@ -62,7 +61,7 @@ export default class Server {
 
     async initializeDBConnectionAsync() {
         try {
-            await mongoose.connect(AppConfigs.DB_CONNECTION, {
+            await mongoose.connect(APP_CONFIGS.dbConnection, {
                 autoIndex: true,
                 dbName: "football_leagues",
             });
