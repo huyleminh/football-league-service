@@ -26,7 +26,7 @@ export default class AuthController extends AppController {
 
         this._router.post("/auth/logout", this.postLogoutAsync);
 
-        this._router.get("/verify-token", this.getVerifyTokenAsync);
+        this._router.get("/verify-token", [AuthMiddlewares.verifyUserToken], this.getVerifyTokenAsync);
     }
 
     async postLoginAsync(req: IAppRequest, res: IAppResponse) {
