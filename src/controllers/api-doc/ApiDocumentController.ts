@@ -4,8 +4,10 @@ import * as fs from "fs";
 import { parse } from "yaml";
 import { APP_CONFIGS } from "../../shared/AppConfigs";
 import * as SwaggerUi from "swagger-ui-express";
+import path = require("path");
 
-const swaggerYaml = fs.readFileSync(`${__dirname}/../swagger.yml`, "utf8");
+// const swaggerYaml = fs.readFileSync(`${__dirname}/../swagger.yml`, "utf8");
+const swaggerYaml = fs.readFileSync(path.join(__dirname, "../swagger.yml"), "utf8");
 const swaggerDoc = parse(swaggerYaml);
 
 export default class ApiDocumentController extends AppController {
