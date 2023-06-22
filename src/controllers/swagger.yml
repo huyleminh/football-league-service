@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Football League Service
-  description: Please note that all api operation return 200 HTTP code, each respond data contains different identity code. So in this specification, the respond code is as same as the identity code field in the respond data.
+  description: Please note that all api operations return 200 HTTP code.
   contact:
     name: API Support
     email: leminhhuy.hcmus@gmail.com
@@ -58,45 +58,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BaseLoginForm'
+              $ref: '#/components/schemas/BaseLoginBody'
       responses:
         '200':
-          description: :ogin success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: object
-                    properties:
-                      accessToken:
-                        type: string
-                      refreshToken:
-                        type: string
-                      idToken:
-                        type: string
-                      expireIn:
-                        type: number
-                      expireAt:
-                        type: string
-                  user:
-                    type: object
-                    properties:
-                      fullname:
-                        type: string
-              example:
-                token:
-                  accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6ImxlYWd1ZXM6YWxsIiwicm9sZSI6MCwidXNlcklkIjoiNjI0ZmRmOGU4OWNhZjNmOWQ2MzY2ZjQ3IiwiaWF0IjoxNjg3MzY0NDE1LCJleHAiOjE2ODczNjgwMTV9.4ze-UE_q6BEkMesf0QGnwF-ipfDJWGdhmEkCWKXn9-E'
-                  refreshToken: 'b04b1c73737cdd739649412538a72f0a2a3fb51f9f84a18ba717e0fcd63bacf4ef2fa1e94c69cbdd32c27f1298e05ee48a93245c2eaf41f50ef99cf0f8a7971aef94294e1749a0cb18f37582cf82f2bd'
-                  idToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9vZGF5MUBmZGEuZ292IiwiZnVsbG5hbWUiOiJPZGUgTydEYXkiLCJpYXQiOjE2ODczNjQ0MTUsImV4cCI6MTY4Nzk2OTIxNSwiaXNzIjoiaHR0cHM6Ly9mb290YmFsbGxlYWd1ZXNlcnZpY2Uub25yZW5kZXIuY29tIiwic3ViIjoiNjI0ZmRmOGU4OWNhZjNmOWQ2MzY2ZjQ3In0.dDiEg7WWBbGJMSYxv8JFuB5CAX_yAfrfg9TF7c-bKTM"
-                  expireIn: 3600000
-                  expireAt: 2023-06-21T17:20:16.087Z
-                user:
-                    fullname: Ode O'Day
-
-        '400':
-          description: Bad Request
+          description: Login response
           content:
             application/json:
               schema:
@@ -105,11 +70,184 @@ paths:
                 type: object
                 properties:
                   data:
+                    type: object
+                    properties:
+                      token:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                          refreshToken:
+                            type: string
+                          idToken:
+                            type: string
+                          expireIn:
+                            type: number
+                          expireAt:
+                            type: string
+                      user:
+                        type: object
+                        properties:
+                          fullname:
+                            type: string
+              examples:
+                ok:
+                  summary: Login Ok
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-22T04:08:48.787Z'
+                    data:
+                      token:
+                        accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6ImxlYWd1ZXM6YWxsIiwicm9sZSI6MCwidXNlcklkIjoiNjI0ZmRmOGU4OWNhZjNmOWQ2MzY2ZjQ3IiwiaWF0IjoxNjg3MzY0NDE1LCJleHAiOjE2ODczNjgwMTV9.4ze-UE_q6BEkMesf0QGnwF-ipfDJWGdhmEkCWKXn9-E'
+                        refreshToken: 'b04b1c73737cdd739649412538a72f0a2a3fb51f9f84a18ba717e0fcd63bacf4ef2fa1e94c69cbdd32c27f1298e05ee48a93245c2eaf41f50ef99cf0f8a7971aef94294e1749a0cb18f37582cf82f2bd'
+                        idToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9vZGF5MUBmZGEuZ292IiwiZnVsbG5hbWUiOiJPZGUgTydEYXkiLCJpYXQiOjE2ODczNjQ0MTUsImV4cCI6MTY4Nzk2OTIxNSwiaXNzIjoiaHR0cHM6Ly9mb290YmFsbGxlYWd1ZXNlcnZpY2Uub25yZW5kZXIuY29tIiwic3ViIjoiNjI0ZmRmOGU4OWNhZjNmOWQ2MzY2ZjQ3In0.dDiEg7WWBbGJMSYxv8JFuB5CAX_yAfrfg9TF7c-bKTM'
+                        expireIn: 3600000
+                        expireAt: '2023-06-21T17:20:16.087Z'
+                      user:
+                          fullname: Ode O'Day
+
+                bad_request:
+                  summary: Login Fail
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-22T04:08:48.787Z'
+                    data: Thiếu tên đăng nhập
+
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh access token
+      operationId: refreshToken
+      security:
+        - IDToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenBody'
+      responses:
+        '200':
+          description: Refresh token success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                type: object
+                properties:
+                  accessToken:
                     type: string
+                  refreshToken:
+                    type: string
+                  idToken:
+                    type: string
+                  expireIn:
+                    type: number
+                  expireAt:
+                    type: string
+              examples:
+                ok:
+                  summary: Refresh OK
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-22T04:08:48.787Z'
+                    data:
+                      accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6ImxlYWd1ZXM6YWxsIiwicm9sZSI6MCwidXNlcklkIjoiNjI0ZmRmOGU4OWNhZjNmOWQ2MzY2ZjQ3IiwiaWF0IjoxNjg3MzY0NDE1LCJleHAiOjE2ODczNjgwMTV9.4ze-UE_q6BEkMesf0QGnwF-ipfDJWGdhmEkCWKXn9-E'
+                      refreshToken: 'b04b1c73737cdd739649412538a72f0a2a3fb51f9f84a18ba717e0fcd63bacf4ef2fa1e94c69cbdd32c27f1298e05ee48a93245c2eaf41f50ef99cf0f8a7971aef94294e1749a0cb18f37582cf82f2bd'
+                      idToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9vZGF5MUBmZGEuZ292IiwiZnVsbG5hbWUiOiJPZGUgTydEYXkiLCJpYXQiOjE2ODczNjQ0MTUsImV4cCI6MTY4Nzk2OTIxNSwiaXNzIjoiaHR0cHM6Ly9mb290YmFsbGxlYWd1ZXNlcnZpY2Uub25yZW5kZXIuY29tIiwic3ViIjoiNjI0ZmRmOGU4OWNhZjNmOWQ2MzY2ZjQ3In0.dDiEg7WWBbGJMSYxv8JFuB5CAX_yAfrfg9TF7c-bKTM'
+                      expireIn: 3600000
+                      expireAt: '2023-06-22T05:08:48.787Z'
+                unauthorized:
+                  summary: 'Refresh failed'
+                  value:
+                    code: 401
+                    message: Unauthorized
+                    metadata:
+                      createdDate: '2023-06-22T04:08:48.787Z'
+                    data: Không thể làm mới phiên đăng nhập, vui lòng đăng nhập lại
+
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout user
+      operationId: logout
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Logout success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
               example:
-                code: 400
-                message: Bad Request
-                data: Thiếu tên đăng nhập
+                code: 204
+                message: No Content
+                metadata:
+                  createdDate: '2023-06-22T04:08:48.787Z'
+
+  /verify-token:
+    get:
+      tags:
+        - Auth
+      summary: Check the status of access token
+      operationId: verifyToken
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: Check done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      scope:
+                        type: string
+                      role:
+                        type: number
+              examples:
+                ok:
+                  summary: Valid token
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-22T04:08:48.787Z'
+                    data:
+                      scope: leagues:read
+                      role: 0
+                unauthorized:
+                  summary: Invalid or expires token
+                  value:
+                    code: 401
+                    message: Unauthorized
+                    metadata:
+                      createdDate: '2023-06-22T04:08:48.787Z'
 
 components:
   schemas:
@@ -125,8 +263,7 @@ components:
           properties:
             createdDate:
               type: string
-              example: 2023-06-21T16:08:56.318Z
-    BaseLoginForm:
+    BaseLoginBody:
       type: object
       properties:
         username:
@@ -134,7 +271,17 @@ components:
         password:
           type: string
 
+    RefreshTokenBody:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+
   securitySchemes:
-    access_token:
+    AccessToken:
+      type: http
+      scheme: Bearer
+
+    IDToken:
       type: http
       scheme: Bearer
