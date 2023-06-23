@@ -16,6 +16,10 @@ tags:
   - name: HealthCheck
     description: Find out basic information of the service
   - name: Auth
+  - name: Managers
+    description: Managing managers
+  - name: Ranking
+    description: View ranking board
 
 paths:
   /health-check:
@@ -249,6 +253,330 @@ paths:
                     metadata:
                       createdDate: '2023-06-22T04:08:48.787Z'
 
+  /managers:
+    get:
+      tags:
+        - Managers
+      summary: Get list of managers
+      operationId: getManagers
+      security:
+        - AccessToken: []
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The number of records in single page
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: status
+          schema:
+            type: integer
+          description: 'The user status: active - 1 or inactive - 0'
+        - in: query
+          name: searchType
+          schema:
+            type: integer
+          description: 'Search user type: by fullname - 0 or email - 1'
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Keyword
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PagingResponse'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ManagerItem'
+              examples:
+                ok:
+                  summary: Get success
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                      pagination:
+                          page: 1
+                          pageSize: 5
+                          totalRecord: 26
+                    data:
+                      - _id: 624fdf8e89caf3f9d6366f6e
+                        username: zflode14
+                        email: zflode14@latimes.com
+                        fullname: Zedekiah Flode
+                        address: 7982 Debs Center
+                        role: 1
+                        status: 1
+                        lastLockedDate: '2022-04-05T04:58:01.235Z'
+                        createdDate: '2022-04-03T04:58:01.235'
+                bad_request:
+                  summary: Get failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể lấy danh sách manager
+
+    post:
+      tags:
+        - Managers
+      summary: Create new manager
+      operationId: createManager
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateManagerBody'
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                created:
+                  summary: Create ok
+                  value:
+                    code: 201
+                    message: Created
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                bad_request:
+                  summary: Create failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể tạo mới quản lý, vui lòng thử lại
+
+  /managers/{managerId}:
+    get:
+      tags:
+        - Managers
+      summary: Get a manager information
+      operationId: getManagerById
+      security:
+        - AccessToken: []
+      parameters:
+        - in: path
+          name: managerId
+          schema:
+            type: string
+          required: true
+          description: The id of the manager to get
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/ManagerDetail'
+
+              examples:
+                ok:
+                  summary: Get success
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data:
+                      user:
+                        _id: 624fdf8e89caf3f9d6366f6e
+                        username: zflode14
+                        email: zflode14@latimes.com
+                        fullname: Zedekiah Flode
+                        address: 7982 Debs Center
+                        role: 1
+                        status: 1
+                        lastLockedDate: '2022-04-05T04:58:01.235Z'
+                        createdDate: '2022-04-03T04:58:01.235'
+                bad_request:
+                  summary: Get failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không tìm thấy quản lý
+    delete:
+      tags:
+        - Managers
+      summary: Delete a manager
+      description: Delete permanently if there are no tournaments are managed or inactive otherwise
+      operationId: deleteManagerById
+      security:
+        - AccessToken: []
+      parameters:
+        - in: path
+          name: managerId
+          schema:
+            type: string
+          required: true
+          description: The id of the manager to delete
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                type: object
+                properties:
+                  data:
+                    type: string
+
+              examples:
+                ok:
+                  summary: Delete success
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Xóa quản lý thành công
+                bad_request:
+                  summary: Delete failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể xóa quản lý
+  /managers/{managerId}/password:
+    patch:
+      tags: [Managers]
+      operationId: resetManagerPasswordById
+      summary: Reset manager password
+      description: Reset password for a manager and send new password via email address
+      security:
+        - AccessToken: []
+      parameters:
+        - in: path
+          name: managerId
+          schema:
+            type: string
+          required: true
+          description: The id of the manager to reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                type: object
+                properties:
+                  data:
+                    type: string
+              examples:
+                ok:
+                  summary: Reset success
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Cấp lại mật khẩu thành công
+                bad_request:
+                  summary: Reset failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể cấp lại mật khẩu
+
+  /ranking/{tournamentId}:
+    get:
+      tags: [Ranking]
+      summary: View ranking board of a tournament
+      operationId: getTournamentRanking
+      security:
+        - AccessToken: []
+      parameters:
+        - in: path
+          name: tournamentId
+          schema:
+            type: string
+          required: true
+          description: The id of the tournament to view ranking
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/RankingItem'
+              examples:
+                ok:
+                  summary: Get success
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data:
+                      - id: 626300ce2313c9b06eaaea81
+                        logo: https://i.ibb.co/WHxHVSD/faadb0632715.png
+                        name: Topenland Bình Định
+                        participatedAt: '2022-04-22T19:23:58.972Z'
+                        totalLost: 1
+                        totalPoint: 0
+                        totalTied: 0
+                        totalWon: 0
+                bad_request:
+                  summary: Get failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể xem bảng xếp hạng giải đấu
+
 components:
   schemas:
     BaseResponse:
@@ -263,6 +591,29 @@ components:
           properties:
             createdDate:
               type: string
+
+    PagingResponse:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+        metadata:
+          type: object
+          properties:
+            createdDate:
+              type: string
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                pageSize:
+                  type: integer
+                totalRecord:
+                  type: integer
+
     BaseLoginBody:
       type: object
       properties:
@@ -270,12 +621,95 @@ components:
           type: string
         password:
           type: string
+      required: [username, password]
 
     RefreshTokenBody:
       type: object
       properties:
         refreshToken:
           type: string
+      required: [refreshToken]
+
+    CreateManagerBody:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+        fullname:
+          type: string
+        address:
+          type: string
+        status:
+          type: integer
+      required: [username, password, email, fullname, status]
+
+    ManagerDetail:
+      type: object
+      properties:
+        '_id':
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        fullname:
+          type: string
+        address:
+          type: string
+        role:
+          type: integer
+        status:
+          type: integer
+        lastLockedDate:
+          type: string
+        createdDate:
+          type: string
+
+    ManagerItem:
+      type: object
+      properties:
+        '_id':
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        fullname:
+          type: string
+        address:
+          type: string
+        role:
+          type: integer
+        status:
+          type: integer
+        lastLockedDate:
+          type: string
+        createdDate:
+          type: string
+
+    RankingItem:
+      type: object
+      properties:
+        id:
+          type: string
+        logo:
+          type: string
+        name:
+          type: string
+        participatedAt:
+          type: string
+        totalLost:
+          type: integer
+        totalPoint:
+          type: integer
+        totalTied:
+          type: integer
+        totalWon:
+          type: integer
 
   securitySchemes:
     AccessToken:

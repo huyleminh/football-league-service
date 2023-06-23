@@ -96,8 +96,8 @@ export default class ManagerController extends AppController {
             if (user === null) {
                 return apiRes.code(400).data("Không tìm thấy quản lý").send();
             }
-            const tournamentList = await TournamentModel.find({ createdBy: user._id }).exec();
-            apiRes.data({ user, tournamentList }).send();
+            // const tournamentList = await TournamentModel.find({ createdBy: user._id }).exec();
+            apiRes.data({ user }).send();
         } catch (error) {
             this._errorHandler.handle(error.message);
             apiRes.code(400).data("Không thể lấy danh sách chi tiết manager").send();
