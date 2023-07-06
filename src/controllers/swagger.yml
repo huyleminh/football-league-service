@@ -18,6 +18,8 @@ tags:
   - name: Auth
   - name: Managers
     description: Managing managers
+  - name: Tournaments
+    description: Managing football tournament
   - name: Ranking
     description: View ranking board
 
@@ -472,6 +474,7 @@ paths:
                     metadata:
                       createdDate: '2023-06-23T04:20:43.928Z'
                     data: Không thể xóa quản lý
+
   /managers/{managerId}/password:
     patch:
       tags: [Managers]
@@ -525,6 +528,398 @@ paths:
                     metadata:
                       createdDate: '2023-06-23T04:20:43.928Z'
                     data: Không thể cấp lại mật khẩu
+
+  /tournaments:
+    get:
+      tags: [Tournaments]
+      description: Get list of tournament
+      operationId: getTournamentList
+      security:
+        - AccessToken: []
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The number of records in single page
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: status
+          schema:
+            type: integer
+          description: 'The tournament status'
+        - in: query
+          name: searchType
+          schema:
+            type: integer
+          description: "Search tournament type: by name - 0 or manager's name - 1"
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Keyword
+        - in: query
+          name: selfAssigned
+          schema:
+            type: string
+          description: 'Are tournaments managed by current user: true or false'
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PagingResponse'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TournamentItem'
+              examples:
+                ok:
+                  summary: Get success
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                      pagination:
+                          page: 1
+                          pageSize: 5
+                          totalRecord: 6
+                    data:
+                      - _id: "6260414ebc4ce114bdc9953c"
+                        createdBy: 624fdf8e89caf3f9d6366f46
+                        name: Vô địch Quốc gia Night Wolf 2022
+                        logoUrl: https://vpf.vn/wp-content/themes/VPF-child/assets/images/logo_channel/vdqg.png
+                        sponsorName: ['Sâm Ngọc Linh']
+                        totalTeam: 13
+                        status: 1
+                        scheduledDate: '2022-04-27T17:05:29.087Z'
+                        createdAt: '2022-04-20T17:22:22.535Z'
+                        updatedAt: '2022-04-20T17:22:22.535Z'
+                        manager:
+                          _id: 624fdf8e89caf3f9d6366f46
+                          fullname: Huy Le Minh
+                bad_request:
+                  summary: Get failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể lấy danh sách giải đấu
+
+    post:
+      tags: [Tournaments]
+      description: Create a tournament
+      operationId: createTournament
+      security:
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:            # Request payload
+              $ref: '#/components/schemas/CreateTournamentBody'
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                type: object
+                properties:
+                  data:
+                    type: string
+              examples:
+                created:
+                  summary: Create ok
+                  value:
+                    code: 201
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Tạo mới giải đấu thành công
+                bad_request:
+                  summary: Create failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Thiếu tên giải đấu
+
+  /tournaments/{tournamentId}:
+    get:
+      tags: [Tournaments]
+      description: Get a tournament information
+      operationId: getTournamentDetail
+      security:
+        - AccessToken: []
+      parameters:
+        - in: path
+          name: tournamentId
+          schema:
+            type: string
+          required: true
+          description: The id of the tournament to view details
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TournamentDetail'
+              examples:
+                ok:
+                  summary: Get success
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data:
+                      _id: 6260414ebc4ce114bdc9953c
+                      name: Vô địch Quốc gia Night Wolf 2022
+                      logoUrl: https://vpf.vn/wp-content/themes/VPF-child/assets/images/logo_channel/vdqg.png
+                      sponsorName: [ Sâm Ngọc Linh ]
+                      totalTeam: 13
+                      status: 1
+                      scheduledDate: '2022-04-27T17:05:29.087Z'
+                      createdAt: '2022-04-20T17:22:22.535Z'
+                      updatedAt: '2022-04-20T17:22:22.535Z'
+                      createdByName: Huy Le Minh
+                bad_request:
+                  summary: Get failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể lấy thông tin chi tiết giải đấu
+    delete:
+      tags: [Tournaments]
+      description: Delete a tournament
+      operationId: deleteTournament
+      security:
+        - AccessToken: []
+      parameters:
+        - in: path
+          name: tournamentId
+          schema:
+            type: string
+          required: true
+          description: The id of the tournament to delete
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+              examples:
+                ok:
+                  summary: Delete success
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                bad_request:
+                  summary: Delete failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể xóa giải đấu
+
+  /tournaments/{tournamentId}/config:
+    get:
+      tags: [Tournaments]
+      description: Get tournament's config
+      operationId: getTournamentConfig
+      security:
+        - AccessToken: []
+      parameters:
+        - in: path
+          name: tournamentId
+          schema:
+            type: string
+          required: true
+          description: The id of the tournament
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      maxAdditionalPlayer:
+                        type: integer
+                      maxChangingPlayer:
+                        type: integer
+                      maxPlayerAge:
+                        type: integer
+                      maxAbroardPlayer:
+                        type: integer
+                      maxTeam:
+                        type: integer
+                      maxPlayerPerMatch:
+                        type: integer
+              examples:
+                ok:
+                  summary: Get success
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data:
+                      maxAdditionalPlayer: 10
+                      maxChangingPlayer: 5
+                      maxPlayerAge: 50
+                      maxAbroardPlayer: 10
+                      maxTeam: 25
+                      maxPlayerPerMatch: 20
+                bad_request:
+                  summary: Get failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể lấy cấu hình chi tiết giải đấu
+
+  /tournaments/{tournamentId}/participants:
+    get:
+      tags: [Tournaments]
+      description: Get tournament's participants
+      operationId: getTournamentParticipants
+      security:
+        - AccessToken: []
+      parameters:
+        - in: path
+          name: tournamentId
+          schema:
+            type: string
+          required: true
+          description: The id of the tournament
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        name:
+                          type: string
+                        logo:
+                          type: string
+                        coachName:
+                          type: string
+                        totalMember:
+                          type: integer
+              examples:
+                ok:
+                  summary: Get success
+                  value:
+                    code: 200
+                    message: OK
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data:
+                      - _id: 6262ddeda81c8919454b5a23
+                        name: Hoàng Anh Gia Lai
+                        logo: https://i.ibb.co/bH7Sdnw/6fbe3a7a5684.jpg
+                        coachName: Kiatisuk Senamuang
+                        totalMember: 39
+                bad_request:
+                  summary: Get failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể lấy danh sách đội bóng
+
+  /tournaments/{tournamentId}/status:
+    patch:
+      tags: [Tournaments]
+      summary: Edit status of a tournament
+      operationId: changeTournamentStatus
+      security:
+        - AccessToken: []
+      parameters:
+        - in: path
+          name: tournamentId
+          schema:
+            type: string
+          required: true
+          description: The id of the tournament
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: integer
+      responses:
+        '200':
+          description: Request done
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                no_content:
+                  summary: Update ok
+                  value:
+                    code: 204
+                    message: No Content
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                bad_request:
+                  summary: Update failed
+                  value:
+                    code: 400
+                    message: Bad Request
+                    metadata:
+                      createdDate: '2023-06-23T04:20:43.928Z'
+                    data: Không thể cập nhật trạng thái
 
   /ranking/{tournamentId}:
     get:
@@ -621,6 +1016,7 @@ components:
           type: string
         password:
           type: string
+          format: password
       required: [username, password]
 
     RefreshTokenBody:
@@ -637,8 +1033,10 @@ components:
           type: string
         password:
           type: string
+          format: password
         email:
           type: string
+          format: email
         fullname:
           type: string
         address:
@@ -646,6 +1044,24 @@ components:
         status:
           type: integer
       required: [username, password, email, fullname, status]
+
+    CreateTournamentBody:
+      type: object
+      properties:
+        name:
+          type: string
+        sponsorName:
+          type: string
+          description: Each sponsor's name is separated by a comma
+        config:
+          type: string
+          example: '{"maxAdditionalPlayer":10,"maxChangingPlayer":5,"maxPlayerAge":50,"maxAbroardPlayer":10,"maxTeam":25,"maxPlayerPerMatch":20}'
+        scheduledDate:
+          type: string
+        logo:
+          type: string
+          format: binary
+      required: [name, sponsorName, config, scheduledDate, logo]
 
     ManagerDetail:
       type: object
@@ -689,6 +1105,65 @@ components:
         lastLockedDate:
           type: string
         createdDate:
+          type: string
+
+    TournamentItem:
+      type: object
+      properties:
+        '_id':
+          type: string
+        createdBy:
+          type: string
+        name:
+          type: string
+        logoUrl:
+          type: string
+        sponsorName:
+          type: array
+          items:
+            type: string
+        totalTeam:
+          type: integer
+        status:
+          type: integer
+        scheduledDate:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        manager:
+          type: object
+          properties:
+            '_id':
+              type: string
+            fullname:
+              type: string
+
+    TournamentDetail:
+      type: object
+      properties:
+        '_id':
+          type: string
+        name:
+          type: string
+        logoUrl:
+          type: string
+        sponsorName:
+          type: array
+          items:
+            type: string
+        totalTeam:
+          type: integer
+        status:
+          type: integer
+        scheduledDate:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        createdByName:
           type: string
 
     RankingItem:
